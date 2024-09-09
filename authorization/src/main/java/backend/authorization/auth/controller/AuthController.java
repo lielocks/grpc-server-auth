@@ -9,12 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
 @Slf4j
 @RequiredArgsConstructor
 public class AuthController {
@@ -26,7 +24,7 @@ public class AuthController {
      * Login API
      * @return Access Token(15분 후 만료), Refresh token(3시간 후 만료)
      */
-    @PostMapping("/api/login")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         AuthTokens authTokens = authService.login(loginRequest);
 
@@ -45,7 +43,7 @@ public class AuthController {
      * @param refreshToken
      * @return 새로운 Access Token
      */
-    @PostMapping("/api/token/reissue")
+    @PostMapping("/token/reissue")
     public ResponseEntity<String> reissueToken(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
         log.info("/api/token/reissue");
         return ResponseEntity.ok().body(authService.reissueToken(refreshToken));
@@ -58,7 +56,7 @@ public class AuthController {
      * @param refreshToken
      * @return
      */
-    @PostMapping("/api/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logOut(@CookieValue(name = REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
         // Redis에서 REFRESH_TOKEN 삭제
         authService.logOut(refreshToken);
